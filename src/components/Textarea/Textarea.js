@@ -3,10 +3,7 @@ import * as React from 'react';
 import Label from '../Label/Label';
 import Icon from '../Icon/Icon';
 import { uuid4 } from '../../utils/utils';
-import {
-  LABEL_CLASSES,
-  STAT_CLASSES,
-} from '../../constants/classes';
+import { LABEL_CLASSES, STAT_CLASSES } from '../../constants/classes';
 
 /**
  * @uxpincomponent
@@ -30,33 +27,33 @@ export default class Textarea extends React.Component {
   }
 
   render() {
-    const info = this.props.info
-      ? (
-        <div className={`${STAT_CLASSES.TITLE_HELP}`}>
-          <Icon
-            uxpId={`infoIcon-${this.state.id}`}
-            icon={'circle-info-outline'}
-            size="xs"
-            color="primary"
-            mode="button"
-            popover={true}
-            popoverTitle={this.props.infoPopoverTitle}
-            popoverDescription={this.props.infoPopoverDescription}
-            popoverPosition={this.props.infoPopoverPosition}
-          />
-        </div>
-      ) : '';
-    const label = this.props.label
-      ? (
-        <Label
-          htmlFor={this.state.id}
-          className="chi-label"
-          required={this.props.required}
-          label={this.props.label}>
-        </Label>
-      )
-      : null
+    const info = this.props.info ? (
+      <div className={`${STAT_CLASSES.TITLE_HELP}`}>
+        <Icon
+          uxpId={`infoIcon-${this.state.id}`}
+          icon={'circle-info-outline'}
+          size="xs"
+          color="primary"
+          mode="button"
+          popover={true}
+          popoverTitle={this.props.infoPopoverTitle}
+          popoverDescription={this.props.infoPopoverDescription}
+          popoverPosition={this.props.infoPopoverPosition}
+        />
+      </div>
+    ) : (
+      ''
+    );
+    const label = this.props.label ? (
+      <Label
+        htmlFor={this.state.id}
+        className="chi-label"
+        required={this.props.required}
+        label={this.props.label}
+      ></Label>
+    ) : null;
     const value = this.props.value ? this.props.value : '';
+    const helperMessageAttr = this.props.helperMessage ? this.props.helperMessageText : '';
 
     return (
       <div className="chi-form__item">
@@ -64,15 +61,19 @@ export default class Textarea extends React.Component {
           {label}
           {info}
         </div>
-        <textarea
+        <chi-textarea
           id={this.state.id}
-          className={`
-            chi-input
-            ${['success', 'warning', 'danger'].includes(this.props.state) ? `-${this.props.state}` : ''}
-            ${this.props.size ? `-${this.props.size}` : ''}
-            `}
           disabled={this.props.disabled}
+          size={this.props.size}
+          state={
+            ['success', 'warning', 'danger'].includes(this.props.helperMessageType) ? this.props.helperMessageType : ''
+          }
+          icon-left={this.props.iconLeft}
+          icon-left-color={this.props.iconLeftColor}
+          icon-right={this.props.iconRight}
+          icon-right-color={this.props.iconRightColor}
           placeholder={this.props.placeholder}
+          helper-message={helperMessageAttr}
           onClick={this.props.click}
           onFocus={this.props.focus}
           onBlur={this.props.focusLost}
@@ -82,62 +83,85 @@ export default class Textarea extends React.Component {
           onMouseLeave={this.props.mouseLeave}
           onMouseDown={this.props.mouseDown}
           onMouseUp={this.props.mouseUp}
-          style={{
-            height: this.props.height ? `${this.props.height}px` : '',
-          }}
-          >
-            {value}
-        </textarea>
+        >
+          {value}
+        </chi-textarea>
       </div>
     );
   }
 }
 
 Textarea.propTypes = {
-  size: PropTypes.oneOf(['sm', 'md', 'lg', 'xl']),
-  height: PropTypes.number,
+  /**
+   * @uxpinpropname field label
+   * */
   label: PropTypes.string,
   required: PropTypes.oneOf(['none', 'required', 'optional']),
+  value: PropTypes.string,
+  placeholder: PropTypes.string,
+  disabled: PropTypes.bool,
+  helperMessage: PropTypes.bool,
+  helperMessageText: PropTypes.string,
+  helperMessageType: PropTypes.oneOf(['default', 'success', 'warning', 'danger']),
+  /**
+   * @uxpinpropname info icon
+   * */
   info: PropTypes.bool,
   infoPopoverTitle: PropTypes.string,
   /**
-    * @uxpinpropname info popover text
-    * @uxpincontroltype textfield(10)
-    * */
+   * @uxpinpropname info popover text
+   * @uxpincontroltype textfield(10)
+   * */
   infoPopoverDescription: PropTypes.string,
   infoPopoverPosition: PropTypes.oneOf(['right-start', 'top']),
-  /** @uxpinignoreprop */
-  clickInfo: PropTypes.func,
-  /** @uxpinignoreprop */
-  mouseOverInfo: PropTypes.func,
-  /** @uxpinignoreprop */
-  mouseLeaveInfo: PropTypes.func,
-  disabled: PropTypes.bool,
+  iconLeft: PropTypes.string,
+  iconLeftColor: PropTypes.oneOf(['', 'primary', 'secondary', 'dark', 'light', 'danger', 'grey', 'muted']),
+  iconRight: PropTypes.string,
+  iconRightColor: PropTypes.oneOf(['', 'primary', 'secondary', 'dark', 'light', 'danger', 'grey', 'muted']),
+  size: PropTypes.oneOf(['sm', 'md', 'lg', 'xl']),
   /**
-    * A textArea controller for Text
-    * @uxpinpropname text
-    * @uxpincontroltype textfield(10)
-    * */
-  value: PropTypes.string,
-  placeholder: PropTypes.string,
-  state: PropTypes.oneOf(['default', 'success', 'warning', 'danger']),
+   * @uxpinpropname on click
+   * */
   click: PropTypes.func,
+  /**
+   * @uxpinpropname on focus
+   * */
   focus: PropTypes.func,
+  /**
+   * @uxpinpropname on focus lost
+   * */
   focusLost: PropTypes.func,
+  /**
+   * @uxpinpropname on input
+   * */
   input: PropTypes.func,
+  /**
+   * @uxpinpropname on mouse down
+   * */
   mouseDown: PropTypes.func,
-  mouseUp: PropTypes.func,
+  /**
+   * @uxpinpropname on mouse over
+   * */
   mouseOver: PropTypes.func,
+  /**
+   * @uxpinpropname on mouse leave
+   * */
   mouseLeave: PropTypes.func,
+  /**
+   * @uxpinpropname on mouse up
+   * */
+  mouseUp: PropTypes.func,
+  /**
+   * @uxpinpropname on value change
+   * */
   valueChange: PropTypes.func,
 };
-/* eslint-enable */
 
 Textarea.defaultProps = {
   disabled: false,
-  size: 'md',
-  state: 'default',
   required: 'none',
+  size: 'md',
   placeholder: '',
   value: '',
+  helperMessageType: 'default',
 };
